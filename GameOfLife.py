@@ -14,7 +14,7 @@ class creature(physics):
     self.health = 0.0
     self.dna = list()
     self.sensors = list()
-  def createRandomPopulation():
+  def createRandomPopulation(self):
     
     self.health = 100
     self.Bpart = pygame.image.load("resources/images/back.png")
