@@ -21,8 +21,14 @@ class creature(physics):
           self.state = 1
           self.eggcycle = 10
           self.gender = int(random.uniform(0,2))
-          self.Bpart = pygame.image.load("resources/images/body.png")
-          self.body.append(self.Bpart)
+          
+          if self.gender == 0:# male
+             self.Bpart = pygame.image.load("resources/images/male.png")
+             self.body.append(self.Bpart)
+          elif self.gender == 1:#female
+            self.Bpart = pygame.image.load("resources/images/female.png")
+            self.body.append(self.Bpart)
+            
           #  genrate random velocity
           self.velocity.x = int(random.uniform(0,10))
           self.velocity.y = int(random.uniform(0,10))
@@ -95,7 +101,7 @@ def gameLogic():
           
           population[i].pos[0] += population[i].velocity.x
           population[i].pos[1] += population[i].velocity.y
-          
+    # collision with boundary      
     for i in  range(0,len(population)):
           
          if population[i].pos[0] >= window[0] :
@@ -109,7 +115,7 @@ def gameLogic():
 
          if population[i].pos[1] < 0 :
             population[i].velocity.reverseDir("y")
-
+    # collision with food
     for p in population:
       for f in food:
         
@@ -124,6 +130,8 @@ def gameLogic():
       for f in population:
         
         if  IsPointInside(p.pos[0],p.pos[1],f.pos,20,12):
+          if p.gender != f.gender :
+            
           if p.health > f.health :
               population.remove(f)
           else:
@@ -133,6 +141,7 @@ def gameLogic():
 # # # if food decrease less then 40 it genrate new food
     if len(food) < 40:
        genrateFood()
+    # creatures die have health < 20  
     for p in population:
       p.health -= 0.5
       p.eggCycle()
