@@ -125,13 +125,14 @@ def gameLogic():
           p.health += 10
           if p.health > 100 :p.health = 100
           
-# # # collision between each other
+# # # collision between each other: 1 same gender ->deth 2 dissimilar gender -> birth
     for p in population:
       for f in population:
         
         if  IsPointInside(p.pos[0],p.pos[1],f.pos,20,12):
           if p.gender != f.gender :
-            
+            if p.health >60 and f.health >60:
+               birth(p);p.eggcycle = 10
           if p.health > f.health :
               population.remove(f)
           else:
@@ -147,6 +148,7 @@ def gameLogic():
       p.eggCycle()
       if p.health < 20 : p.state = 3;# dead state
       if p.health > 80 and p.eggcycle <= 2 and p.state == 1: birth(p);p.eggcycle = 10
+      
 
 def genrateFood():
     global food
