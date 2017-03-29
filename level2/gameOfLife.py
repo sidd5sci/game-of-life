@@ -131,7 +131,7 @@ def gameLogic():
         
         if  IsPointInside(p.pos[0],p.pos[1],f.pos,20,12):
           if p.gender != f.gender :
-            if p.health >60 and f.health >60:
+            if (p.health >60 and p.state == 1 and p.eggcycle <= 2 ) and (f.health >60 and f.state == 1 f.eggcycle <= 2 ):
                birth(p);p.eggcycle = 10
           if p.health > f.health :
               population.remove(f)
@@ -147,7 +147,8 @@ def gameLogic():
       p.health -= 0.5
       p.eggCycle()
       if p.health < 20 : p.state = 3;# dead state
-      if p.health > 80 and p.eggcycle <= 2 and p.state == 1: birth(p);p.eggcycle = 10
+        
+     
       
 
 def genrateFood():
