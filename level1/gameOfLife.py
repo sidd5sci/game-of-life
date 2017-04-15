@@ -143,7 +143,13 @@ def genrateFood():
     for f in range(0,100):
       posx,posy = random.uniform(0,window[0]),random.uniform(0,window[1])
       food.append([posx,posy])
-    
+def textShow():
+    global population,food
+    font = pygame.font.SysFont("calibri",20)
+    pop = font.render("Population :"+str(len(population)),True,BLACK)
+    f = font.render("Food :"+str(len(food)),True,BLACK)
+    screen.blit(pop,[10,10])
+    screen.blit(f,[10,30])    
 def foodDisplay():
     global food
     h,v = 3,3
@@ -166,6 +172,7 @@ def main():
     while(1):
        timeline(population)
        foodDisplay()
+       textShow()
        gameLogic()
        # input from user
        _input_()
@@ -182,7 +189,7 @@ def main():
 # colors
 WHITE = (254,254,254)
 RED = (200,20,20)
-
+BLACK = (0,0,0)
 window = (900,600)
 pygame.init()
 screen = pygame.display.set_mode(window)
@@ -193,3 +200,4 @@ population = list()
 food = list()
 
 main()
+

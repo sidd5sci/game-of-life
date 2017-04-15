@@ -1,8 +1,6 @@
-import pygame
-import math, random,time
+import pygame,random,time
+
 from physics import *
-from vector import *
-from timer import *
 
 
 
@@ -14,21 +12,20 @@ class creature(physics):
     self.dna = list()
     self.sensors = list()
     self.state = 1
-    self.eggcycle = 0
+    self.eggcycle = 10
     self.gender = 0 # female
   def CreateRandomPopulation(self):#this should create each time differently
           self.health = 100
           self.state = 1
           self.eggcycle = 10
           self.gender = int(random.uniform(0,2))
-          
-          if self.gender == 0:# male
-             self.Bpart = pygame.image.load("resources/images/male.png")
-             self.body.append(self.Bpart)
-          elif self.gender == 1:#female
+          if self.gender == 0:  # female
             self.Bpart = pygame.image.load("resources/images/female.png")
             self.body.append(self.Bpart)
-            
+          elif self.gender == 1:# male
+            self.Bpart = pygame.image.load("resources/images/male.png")
+            self.body.append(self.Bpart)
+          
           #  genrate random velocity
           self.velocity.x = int(random.uniform(0,10))
           self.velocity.y = int(random.uniform(0,10))
@@ -37,8 +34,11 @@ class creature(physics):
           self.dna.append(DeciToBinary(self.velocity.x))
           self.dna.append(DeciToBinary(self.velocity.y))
   def eggCycle(self):
-    self.eggcycle -= 0.3
-          
+      self.eggcycle -= 0.1
+      if self.eggcycle <= 8:
+         self.state = 2
+      if self.eggcycle < 0:
+         self.eggcycle =10 
           
 '''
 =======================================================
@@ -65,9 +65,10 @@ def _input_():
     if event.type == pygame.QUIT:
       pygame.quit();exit(0)
     if event.type == pygame.MOUSEBUTTONDOWN:
-      pygame.getpos()
+        ##       pygame.getpos()
+      pass
 def display(creature):
-  if creature.state == 1:
+  if creature.state == 1 or creature.state == 2:
     screen.blit(creature.body[0],(creature.pos[0],creature.pos[1]))
   elif creature.state == 0:
     pass
@@ -101,7 +102,7 @@ def gameLogic():
           
           population[i].pos[0] += population[i].velocity.x
           population[i].pos[1] += population[i].velocity.y
-    # collision with boundary      
+          
     for i in  range(0,len(population)):
           
          if population[i].pos[0] >= window[0] :
@@ -115,7 +116,7 @@ def gameLogic():
 
          if population[i].pos[1] < 0 :
             population[i].velocity.reverseDir("y")
-    # collision with food
+
     for p in population:
       for f in food:
         
@@ -125,32 +126,44 @@ def gameLogic():
           p.health += 10
           if p.health > 100 :p.health = 100
           
-# # # collision between each other: 1 same gender ->deth 2 dissimilar gender -> birth
+# # # collision between each other
     for p in population:
       for f in population:
         
         if  IsPointInside(p.pos[0],p.pos[1],f.pos,20,12):
-          if p.gender != f.gender :
-            if (p.health >60 and p.state == 1 and p.eggcycle <= 2 ) and (f.health >60 and f.state == 1 f.eggcycle <= 2 ):
-               birth(p);p.eggcycle = 10
-          if p.health > f.health :
-              population.remove(f)
-          else:
-              # population.remove(p)
-              pass
+
+          if p.gender == f.gender:# # due to fight death takes place
+            if p.health > f.health :
+                population.remove(f)
+            else:
+              population.remove(p)
+              break
+          else:  # # birth takes place
+            
+            if p.health > 60 and f.health > 60 :
+                
+                if p.state == 2 and p.eggcycle >=1 and f.state == 2 and f.eggcycle >=1 :
+                   birth(p);birth(f)
+                   break
+                   
           
 # # # if food decrease less then 40 it genrate new food
     if len(food) < 40:
        genrateFood()
-    # creatures die have health < 20  
     for p in population:
-      p.health -= 0.5
+      p.health -= 0.2
       p.eggCycle()
-      if p.health < 20 : p.state = 3;# dead state
-        
-     
-      
-
+      if p.health < 20 :# natural dead state
+         p.state = 3
+         population.remove(p)
+         
+def textShow():
+    global population,food
+    font = pygame.font.SysFont("calibri",20)
+    pop = font.render("Population :"+str(len(population)),True,BLACK)
+    f = font.render("Food :"+str(len(food)),True,BLACK)
+    screen.blit(pop,[10,10])
+    screen.blit(f,[10,30])
 def genrateFood():
     global food
     h,v = 3,3
@@ -180,6 +193,7 @@ def main():
     while(1):
        timeline(population)
        foodDisplay()
+       textShow()
        gameLogic()
        # input from user
        _input_()
@@ -196,6 +210,7 @@ def main():
 # colors
 WHITE = (254,254,254)
 RED = (200,20,20)
+BLACK = (0,0,0)
 
 window = (900,600)
 pygame.init()
@@ -207,3 +222,4 @@ population = list()
 food = list()
 
 main()
+
